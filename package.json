@@ -1,0 +1,16 @@
+{
+  "name": "pact_assignment",
+  "version": "1.0.0",
+  "description": "This is a full-stack application where users can submit and view Product Carbon Footprint (PCF) data. It includes a backend API built with Node.js (Express) and a frontend built with React.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "prettier": "^3.5.3"
+  }
+}
