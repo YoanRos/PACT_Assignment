@@ -18,6 +18,9 @@ interface PCF {
   productName: string;
   declaredUnit: string;
   emission: number;
+  createdAt: string;
+  category: string;
+  emissionReduction: number;
 }
 
 const PCFRecords: React.FC = () => {
@@ -45,36 +48,52 @@ const PCFRecords: React.FC = () => {
 
   return (
     <Box sx={{ padding: 2 }}>
-      <Typography variant="h5" gutterBottom>
+      <Typography sx={{ padding: 2 }} variant="h5" gutterBottom>
         PCF Records
       </Typography>
 
       {isLoading ? (
         <CircularProgress />
       ) : (
-        <TableContainer component={Paper}>
-          <Table>
+        <TableContainer component={Paper} sx={{ backgroundColor: '#333' }}>
+          <Table sx={{ minWidth: 650 }}>
             <TableHead>
               <TableRow>
-                <TableCell>Product Name</TableCell>
-                <TableCell>Declared Unit</TableCell>
-                <TableCell>Emission (kgCO2)</TableCell>
+                <TableCell sx={{ color: '#fff' }}>Product Name</TableCell>
+                <TableCell sx={{ color: '#fff' }}>Declared Unit</TableCell>
+                <TableCell sx={{ color: '#fff' }}>Emission (kgCO₂)</TableCell>
+                <TableCell sx={{ color: '#fff' }}>Date of Creation</TableCell>
+                <TableCell sx={{ color: '#fff' }}>Product Category</TableCell>
+                <TableCell sx={{ color: '#fff' }}>
+                  Emission Reduction Potential (kgCO₂)
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {pcfs.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={3}>No PCF records found.</TableCell>
+              {pcfs.map((pcf) => (
+                <TableRow
+                  key={pcf.id}
+                  sx={{
+                    '&:nth-of-type(even)': { backgroundColor: '#444' },
+                    '&:hover': { backgroundColor: '#555' },
+                  }}
+                >
+                  <TableCell sx={{ color: '#fff' }}>
+                    {pcf.productName}
+                  </TableCell>
+                  <TableCell sx={{ color: '#fff' }}>
+                    {pcf.declaredUnit}
+                  </TableCell>
+                  <TableCell sx={{ color: '#fff' }}>
+                    {pcf.emission} kgCO₂
+                  </TableCell>
+                  <TableCell sx={{ color: '#fff' }}>{pcf.createdAt}</TableCell>
+                  <TableCell sx={{ color: '#fff' }}>{pcf.category}</TableCell>
+                  <TableCell sx={{ color: '#fff' }}>
+                    {pcf.emissionReduction} kgCO₂
+                  </TableCell>
                 </TableRow>
-              ) : (
-                pcfs.map((pcf) => (
-                  <TableRow key={pcf.id}>
-                    <TableCell>{pcf.productName}</TableCell>
-                    <TableCell>{pcf.declaredUnit}</TableCell>
-                    <TableCell>{pcf.emission} kgCO2</TableCell>
-                  </TableRow>
-                ))
-              )}
+              ))}
             </TableBody>
           </Table>
         </TableContainer>

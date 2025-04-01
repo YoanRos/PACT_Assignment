@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { createPCF, getPCFById, getAllPCFs } from '../services/pcfService';
+import { format } from 'date-fns';
 
 interface PCFParams {
   id: string;
@@ -10,8 +11,22 @@ const submitPCF = (req: Request, res: Response): void => {
     productName,
     declaredUnit,
     emission,
-  }: { productName: string; declaredUnit: string; emission: number } = req.body;
-  const newPCF = createPCF(productName, declaredUnit, emission);
+    category,
+    emissionReduction,
+  }: {
+    productName: string;
+    declaredUnit: string;
+    emission: number;
+    category?: string;
+    emissionReduction?: number;
+  } = req.body;
+  const newPCF = createPCF(
+    productName,
+    declaredUnit,
+    emission,
+    category,
+    emissionReduction
+  );
   res.status(201).json(newPCF);
 };
 
@@ -20,13 +35,22 @@ const fetchPCFById = (req: Request<PCFParams>, res: Response): void => {
   const pcf = getPCFById(id);
   if (!pcf) {
     res.status(404).json({ message: 'PCF not found' });
+    return;
   }
-  res.json(pcf);
+  const formattedPCF = {
+    ...pcf,
+    createdAt: format(new Date(pcf.createdAt), 'MMMM dd, yyyy'), // Format createdAt
+  };
+  res.json(formattedPCF);
 };
 
 const fetchAllPCFs = (req: Request, res: Response): void => {
   const pcfList = getAllPCFs();
-  res.json(pcfList);
+  const formattedPCFs = pcfList.map((pcf) => ({
+    ...pcf,
+    createdAt: format(new Date(pcf.createdAt), 'MMMM dd, yyyy'),
+  }));
+  res.json(formattedPCFs);
 };
 
 export { submitPCF, fetchPCFById, fetchAllPCFs };

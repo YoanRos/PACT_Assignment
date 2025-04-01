@@ -5,6 +5,9 @@ interface PCF {
   productName: string;
   declaredUnit: string;
   emission: number;
+  category?: string;
+  emissionReduction?: number;
+  createdAt: Date;
 }
 
 const pcfRecords: PCF[] = [];
@@ -12,15 +15,23 @@ const pcfRecords: PCF[] = [];
 const createPCF = (
   productName: string,
   declaredUnit: string,
-  emission: number
+  emission: number,
+  category?: string,
+  emissionReduction?: number
 ): PCF => {
   const newPCF: PCF = {
     id: uuidv4(),
     productName,
     declaredUnit,
     emission,
+    category,
+    emissionReduction,
+    createdAt: new Date(),
   };
+  console.log(pcfRecords);
   pcfRecords.push(newPCF);
+  console.log(pcfRecords);
+
   return newPCF;
 };
 

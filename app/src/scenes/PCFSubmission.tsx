@@ -1,40 +1,55 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import {
-  TextField,
-  Button,
-  Typography,
   Box,
   CircularProgress,
+  Button,
+  TextField,
+  Typography,
 } from '@mui/material';
 
-interface PCF {
-  id: string;
+interface PCFFormData {
   productName: string;
   declaredUnit: string;
-  emission: number;
+  emission: string;
+  category: string;
+  emissionReduction: string;
 }
 
 const PCFSubmission: React.FC = () => {
-  const [productName, setProductName] = useState<string>('');
-  const [declaredUnit, setDeclaredUnit] = useState<string>('');
-  const [emission, setEmission] = useState<string>('');
+  const [formData, setFormData] = useState<PCFFormData>({
+    productName: '',
+    declaredUnit: '',
+    emission: '',
+    category: '',
+    emissionReduction: '',
+  });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string>('');
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (isNaN(parseFloat(emission))) {
+    if (isNaN(parseFloat(formData.emission))) {
       setError('Emission must be a valid number');
       return;
     }
 
-    const newPCF: Omit<PCF, 'id'> = {
-      productName,
-      declaredUnit,
-      emission: parseFloat(emission),
+    const newPCF = {
+      ...formData,
+      emission: parseFloat(formData.emission),
+      emissionReduction: formData.emissionReduction
+        ? parseFloat(formData.emissionReduction)
+        : undefined, // If empty, leave it undefined
     };
 
     setIsLoading(true);
@@ -42,25 +57,29 @@ const PCFSubmission: React.FC = () => {
 
     axios
       .post('http://localhost:3001/api/footprints', newPCF)
-      .then((response) => {
+      .then(() => {
         setSuccessMessage('PCF successfully submitted!');
         resetForm();
       })
-      .catch((error) => {
+      .catch(() => {
         setError('Error submitting PCF. Please try again.');
       })
       .finally(() => setIsLoading(false));
   };
 
   const resetForm = () => {
-    setProductName('');
-    setDeclaredUnit('');
-    setEmission('');
+    setFormData({
+      productName: '',
+      declaredUnit: '',
+      emission: '',
+      category: '',
+      emissionReduction: '',
+    });
   };
 
   return (
     <Box sx={{ padding: 2 }}>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h5" sx={{ padding: 2 }} gutterBottom>
         PCF Submission
       </Typography>
 
@@ -74,17 +93,15 @@ const PCFSubmission: React.FC = () => {
           label="Product Name"
           variant="outlined"
           fullWidth
-          value={productName}
-          onChange={(e) => setProductName(e.target.value)}
+          value={formData.productName}
+          onChange={handleChange}
+          name="productName"
           sx={{
             marginBottom: 2,
             '& .MuiOutlinedInput-root': {
               color: 'white',
             },
             '& .MuiInputLabel-root': {
-              color: 'white', // Set label text color to white
-            },
-            '& .MuiInputBase-input::placeholder': {
               color: 'white',
             },
           }}
@@ -94,42 +111,73 @@ const PCFSubmission: React.FC = () => {
           label="Declared Unit"
           variant="outlined"
           fullWidth
-          value={declaredUnit}
-          onChange={(e) => setDeclaredUnit(e.target.value)}
+          value={formData.declaredUnit}
+          onChange={handleChange}
+          name="declaredUnit"
           sx={{
             marginBottom: 2,
             '& .MuiOutlinedInput-root': {
               color: 'white',
             },
             '& .MuiInputLabel-root': {
-              color: 'white', // Set label text color to white
-            },
-            '& .MuiInputBase-input::placeholder': {
               color: 'white',
             },
           }}
           required
         />
         <TextField
-          label="Emission (kgCO2)"
+          label="Emission (kgCO₂)"
           variant="outlined"
           fullWidth
           type="number"
-          value={emission}
-          onChange={(e) => setEmission(e.target.value)}
+          value={formData.emission}
+          onChange={handleChange}
+          name="emission"
           sx={{
             marginBottom: 2,
             '& .MuiOutlinedInput-root': {
               color: 'white',
             },
             '& .MuiInputLabel-root': {
-              color: 'white', // Set label text color to white
-            },
-            '& .MuiInputBase-input::placeholder': {
               color: 'white',
             },
           }}
           required
+        />
+        <TextField
+          label="Product Category"
+          variant="outlined"
+          fullWidth
+          value={formData.category}
+          onChange={handleChange}
+          name="category"
+          sx={{
+            marginBottom: 2,
+            '& .MuiOutlinedInput-root': {
+              color: 'white',
+            },
+            '& .MuiInputLabel-root': {
+              color: 'white',
+            },
+          }}
+        />
+        <TextField
+          label="Emission Reduction Potential (kgCO₂)"
+          variant="outlined"
+          fullWidth
+          type="number"
+          value={formData.emissionReduction}
+          onChange={handleChange}
+          name="emissionReduction"
+          sx={{
+            marginBottom: 2,
+            '& .MuiOutlinedInput-root': {
+              color: 'white',
+            },
+            '& .MuiInputLabel-root': {
+              color: 'white',
+            },
+          }}
         />
         <Button
           type="submit"
